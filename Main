@@ -1,0 +1,120 @@
+'''
+File: main.py
+Description: A brief description of this Python module.
+Author: Billy Bizilis
+StudentID: 110394207
+EmailID: yuyey004
+This is my own work as defined by the University's Academic Misconduct Policy.
+'''
+class Reagent:
+    def __init__(self, name: str, potency: float) -> None:
+        self.name = name
+        self.potency = potency
+    def refine(self) -> None:
+        pass
+    def getName(self) -> str:
+        return self.name
+    def getPotency(self) -> float:
+        return self.potency
+    def setPotency(self, potency: float) -> None:
+        self.potency = potency
+
+class Herb(Reagent):
+    def __init__(self, name: str, potency: float, grimy: bool = True) -> None:
+        super().__init__(name, potency)
+        self.grimy = grimy
+    
+    def refine(self) -> str:
+        return super().refine()
+    def getGrimy(self) -> bool:
+        return self.grimy
+    def setGrimy(self, grimy: bool) -> bool:
+        self.grimy = grimy
+        return True
+
+class Catalyst(Reagent):
+    def __init__(self, name: str, potency: float, quality: float) -> None:
+        super().__init__(name, potency)
+        self.quality = quality
+    
+    def refine(self) -> str:
+        return super().refine()
+    def getQuality(self) -> float:
+        return self.quality
+
+class Potion:
+    def __init__(self, name: str, stat: str, boost: float) -> None:
+        self.name = name
+        self.stat = stat
+        self.boost = boost
+    def calculateBoost(self) -> None:
+        pass
+    def getName(self) -> str:
+        return self.name
+    def getStat(self) -> str:
+        return self.stat
+    def getBoost(self) -> float:
+        return self.boost
+    def setBoost(self, boost: float) -> None:
+        self.boost = boost
+
+class SuperPotion(Potion):
+    def __init__(self, name: str, stat: str, boost: float, herb: Herb, catalyst: Catalyst) -> None:
+        super().__init__(name, stat, boost)
+        self.herb = herb
+        self.catalyst = catalyst
+    def calculateBoost(self) -> float:
+        return super().calculateBoost()
+    def getHerb(self) -> Herb:
+        return self.herb
+    def getCatalyst(self) -> Catalyst:
+        return self.catalyst
+
+class ExtremePotion(Potion):
+    def __init__(self, name: str, stat: str, boost: float, reagent: Reagent, potion: Potion) -> None:
+        super().__init__(name, stat, boost)
+        self.reagent = reagent
+        self.potion = potion
+    def calculateBoost(self) -> float:
+        return super().calculateBoost()
+    def getReagent(self) -> Reagent:
+        return self.reagent
+    def getPotion(self) -> Potion:
+        return self.potion
+
+class Laboratory:
+    def __init__(self, potions: list, herbs: list, catalysts: list) -> None:
+        self.potions = potions
+        self.herbs = herbs
+        self.catalysts = catalysts
+    def mixPotion(self, name: str, type: str, stat: str, primaryIngredient: str, secondaryIngredient: str) -> None:
+        pass
+    def addReagent(self, reagent: Reagent, amount: int) -> None:
+        pass
+
+class Alchemist:
+    def __init__(self, attack: int, strength: int, defense: int,
+        magic: int, ranged: int, necromancy: int,
+        laboratory: Laboratory,
+        recipes: dict = {}) -> None:
+        self.attact = attack
+        self.strength = strength
+        self.defense = defense
+        self.magic = magic
+        self.ranged = ranged
+        self.necromancy = necromancy
+        self.laboratory = laboratory
+        self.recipes = recipes
+
+    def getLaboratory(self) -> Laboratory:
+        return self.laboratory
+    def getRecipes(self) -> dict:
+        return self.recipes
+    def mixPotion(self, recipe:str) -> None:
+        pass
+    def drinkPotion(self, potion: Potion) -> str:
+        pass
+    def collectReagent(self, reagent:Reagent, amount: int) -> None:
+        pass
+    def refineReagents(self):
+        pass
