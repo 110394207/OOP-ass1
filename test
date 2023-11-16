@@ -38,8 +38,7 @@ class TestPoint(unittest.TestCase):
         newt.refine() # 7.6
         newt.refine() # 8.7
         newt.refine() # 9.8
-        self.assertEqual(newt.refine(),"Refined success! The quality is 10 now.")
-        self.assertEqual(newt.refine(),"it cannot be refined any further")
+        self.assertEqual(newt.refine(),"Refined success! The quality is 10 now, it cannot be refined any further")
     
     def test_potion(self):
         superAttack = Potion("Super Attack", "attack", 10)
@@ -71,13 +70,43 @@ class TestPoint(unittest.TestCase):
 
     def testLaboratory(self):
         lab = Laboratory([],[],[])
+        self.assertEqual(lab.getPotionNum("Super Attack"), 0)
         # Add reagents
         irit = Herb("Irit", 1.0)
         newt = Catalyst("Eye of Newt", 4.3, 1.0)
-        lab.mixPotion("Super Attack", "SuperPotion", "attack", irit, newt) # 抛出异常，材料不足
-
+        self.assertRaises(lab.mixPotion("Super Attack", "SuperPotion", "attack", "Irit", "Eye of Newt"), Exception("Mix failed: Ingredients are not enough!"))
         lab.addReagent(irit, 1)
         lab.addReagent(newt, 1)
+        self.assertEqual(lab.getPotionNum("Super Attack"), 0)
+        self.assertEqual(lab.getHerbNum("Irit"), 1)
+        self.assertEqual(lab.getCatalystNum("Eye of Newt"), 1)
+        lab.mixPotion("Super Attack", "SuperPotion", "attack", "Irit", "Eye of Newt")
+        self.assertEqual(lab.getPotionNum("Super Attack"), 1)
+        self.assertEqual(lab.getHerbNum("Irit"), 0)
+        self.assertEqual(lab.getCatalystNum("Eye of Newt"), 0)
+    
+    def testAlchemist(self):
+        irit = Herb("Irit", 1.0)
+        newt = Catalyst("Eye of Newt", 4.3, 1.0)
+        recipes = {}
+        lab = Laboratory([],[],[])
+        self.assertRaises(Alchemist(32, -22, 33, 23, 32, 33, lab, recipes), Exception("All the attributes should be integers from 0 to 100."))
+        self.assertRaises(Alchemist(3000, 2, 33, 23, 32, 33, lab, recipes), Exception("All the attributes should be integers from 0 to 100."))
+
+        Harry = Alchemist(20, 30, 40, 50, 22, 23, lab, recipes) # Yes, he is Harry Potter.
+        Harry.collectReagent(irit, 10)
+        Harry.collectReagent(newt, 10)
+        Harry.mixPotion("Super Attack")
+        potion = Harry.getPotion("Super Attack")
+        Harry.drinkPotion(potion) # Update values.
+        self.assertEqual(Harry.getAttack(), 27.45)
+
+        Harry.refineReagents()
+        Harry.mixPotion("Super Attack")
+        potion = Harry.getPotion("Super Attack")
+        Harry.drinkPotion(potion) # Update values.
+        self.assertEqual(Harry.getAttack(), 27.45)
+
 
 if __name__ == '__main__':
     cov = coverage.Coverage()
