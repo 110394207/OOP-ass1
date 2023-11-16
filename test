@@ -1,1 +1,94 @@
+'''
+File: tests.py
+Description: This file is the test program of Assignment Part 2:Implementation, using unittest to test, to achieve 100% coverage of the code test.
+Author: Enda Yu
+StudentID: 1103942071
+EmailID: Yuyey004
+This is my own work as defined by the University's Academic Misconduct Policy.
+'''
+import unittest
+import coverage
+from main import *
+
+class TestPoint(unittest.TestCase):
+    def test_reagent(self):
+        reagent = Reagent("Avantoe",3.0)
+        self.assertEqual(reagent.getName(),"Avantoe")
+        self.assertEqual(reagent.getPotency(),3)
+        reagent.setPotency(100)
+        self.assertEqual(reagent.getPotency(),100)
+
+    def test_herb(self):
+        avantoe = Herb("Avantoe", 3.0)
+        self.assertEqual(avantoe.getGrimy(), True)
+        self.assertEqual(avantoe.refine(),"Refined success! The potency is 7.5 now.")
+        self.assertEqual(avantoe.getPotency(),7.5)
+        self.assertEqual(avantoe.getGrimy(),False)
+        avantoe.setGrimy(True)
+        self.assertEqual(avantoe.getGrimy(),True)
+
+    def test_catalyst(self):
+        newt = Catalyst("Eye of Newt", 4.3, 1.0)
+        self.assertEqual(newt.getQuality(),1.0)
+        self.assertEqual(newt.refine(),"Refined success! The quality is 2.1 now.")
+        newt.refine() # 3.2
+        newt.refine() # 4.3
+        newt.refine() # 5.4
+        newt.refine() # 6.5
+        newt.refine() # 7.6
+        newt.refine() # 8.7
+        newt.refine() # 9.8
+        self.assertEqual(newt.refine(),"Refined success! The quality is 10 now.")
+        self.assertEqual(newt.refine(),"it cannot be refined any further")
+    
+    def test_potion(self):
+        superAttack = Potion("Super Attack", "attack", 10)
+        self.assertEqual(superAttack.getName(), "Super Attack")
+        self.assertEqual(superAttack.getStat(), "attack")
+        self.assertEqual(superAttack.getBoost(), 10)
+        superAttack.setBoost(100)
+        self.assertEqual(superAttack.getBoost(), 100)
+    
+    def test_superPotion(self):
+        irit = Herb("Irit", 1.0)
+        newt = Catalyst("Eye of Newt", 4.3, 1.0)
+        superAttack = SuperPotion("Super Attack", "attack", irit, newt)
+        self.assertEqual(superAttack.getName(), "Super Attack")
+        self.assertEqual(superAttack.getStat(), "attack")
+        self.assertEqual(superAttack.getBoost(), 7.45) # 1+4.3*1*1.5
+        self.assertEqual(superAttack.getHerb().getName(), "Irit")
+        self.assertEqual(superAttack.getCatalyst().getName(), "Eye of Newt")
+
+    def testExtremePotion(self):
+        irit = Herb("Irit", 1.0)
+        newt = Catalyst("Eye of Newt", 4.3, 1.0)
+        superAttack = SuperPotion("Super Attack", "attack", irit, newt)
+        avantoe = Herb("Avantoe", 3.0)
+        extremeAttack = ExtremePotion("Extreme Attack", "attack", avantoe, superAttack)
+        self.assertEqual(extremeAttack.getBoost(), 22.35) # 1.0*7.45*3
+        self.assertEqual(extremeAttack.getReagent().getName(), "Irit")
+        self.assertEqual(extremeAttack.getPotion().getName(), "Super Attack")
+
+    def testLaboratory(self):
+        lab = Laboratory([],[],[])
+        # Add reagents
+        irit = Herb("Irit", 1.0)
+        newt = Catalyst("Eye of Newt", 4.3, 1.0)
+        lab.mixPotion("Super Attack", "SuperPotion", "attack", irit, newt) # 抛出异常，材料不足
+
+        lab.addReagent(irit, 1)
+        lab.addReagent(newt, 1)
+
+if __name__ == '__main__':
+    cov = coverage.Coverage()
+    cov.start()
+
+    unittest.main()
+
+    cov.stop()
+    cov.save()
+
+    print("Coverage Report:")
+    cov.report()
+    cov.html_report(directory='coverage_report')
 
