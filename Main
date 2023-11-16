@@ -1,42 +1,20 @@
-'''
-File: main.py
-Description: This file is the program of Assignment Part 2:Implementation, it realizes the operation of a game character Alchemy in the game, the role can drink medicine and refine medicine. After drinking a certain potion, its own properties change.
-Author: Enda Yu
-StudentID: 1103942071
-EmailID: Yuyey004
-This is my own work as defined by the University's Academic Misconduct Policy.
-'''
-class Reagent:
-    def __init__(self, name: str, potency: float) -> None:
-        self.name = name
-        self.potency = potency
-    def refine(self) -> None:
-        pass
-    def getName(self) -> str:
-        return self.name
-    def getPotency(self) -> float:
-        return self.potency
-    def setPotency(self, potency: float) -> None:
-        self.potency = potency
-
-class Herb(Reagent):
-    def __init__(self, name: str, potency: float, grimy: bool = True) -> None:
-        super().__init__(name, potency)
-        self.grimy = grimy
-    def refine(self) -> str:
-        return super().refine()
-    def getGrimy(self) -> bool:
-        return self.grimy
-    def setGrimy(self, grimy: bool) -> bool:
-        self.grimy = grimy
-        return True
 
 class Catalyst(Reagent):
     def __init__(self, name: str, potency: float, quality: float) -> None:
         super().__init__(name, potency)
         self.quality = quality
     def refine(self) -> str:
-        return super().refine()
+        """
+        Catalyst: If the quality of the catalyst is below 8.9 then its quality will be increased by 1.1 and this information is printed on the screen. If its quality is equal or above 8.9 then its quality is set to 10. 
+        It should print on the screen the quality and say that “it cannot be refined any further”.
+        """
+        if self.getQuality() >= 10:
+            return "The quality is 10 now, it cannot be refined any further"
+        if self.getQuality() >= 8.9:
+            self.quality = 10.0
+            return "Refined success! The quality is 10 now, it cannot be refined any further"
+        self.quality = round(self.getQuality() + 1.1, 2)
+        return "Refined success! The quality is {} now".format(self.getQuality())
     def getQuality(self) -> float:
         return self.quality
 
@@ -62,7 +40,12 @@ class SuperPotion(Potion):
         self.catalyst = catalyst
         super().__init__(name, stat, self.calculateBoost())
     def calculateBoost(self) -> float:
-        return super().calculateBoost()
+        """
+        Super potion: potency of its herb + (potency of its catalyst * quality of its catalyst) * 1.5. The result should be rounded by 2 decimals.
+        """
+        herb = self.getHerb()
+        catalyst = self.getCatalyst()
+        return round(herb.getPotency() + catalyst.getPotency()*catalyst.getQuality()*1.5, 2)
     def getHerb(self) -> Herb:
         return self.herb
     def getCatalyst(self) -> Catalyst:
@@ -74,7 +57,12 @@ class ExtremePotion(Potion):
         self.potion = potion
         super().__init__(name, stat, self.calculateBoost())
     def calculateBoost(self) -> float:
-        return super().calculateBoost()
+        """
+        Extreme potion: (potency of its reagent * boost value of its super potion) * 3.0. The result should be rounded by two decimals.
+        """
+        reagent = self.getReagent()
+        potion = self.getPotion()
+        return round(reagent.getPotency()*potion.getBoost()*3.0, 2)
     def getReagent(self) -> Reagent:
         return self.reagent
     def getPotion(self) -> Potion:
@@ -86,16 +74,79 @@ class Laboratory:
         self.herbs = herbs
         self.catalysts = catalysts
     def mixPotion(self, name: str, type: str, stat: str, primaryIngredient: str, secondaryIngredient: str) -> None:
-        pass
+        # Find all ingredients.
+        pri, prilist = self.findIngredient(primaryIngredient)
+        sec, seclist = self.findIngredient(secondaryIngredient)
+        # if pri is None or sec is None:
+        if pri is None or sec is None:
+            raise ValueError("Mix failed: Ingredients are not enough!")
+
+        if type == "SuperPotion":
+            potion = SuperPotion(name, stat, pri, sec)
+        elif type == "ExtremePotion":
+            potion = ExtremePotion(name, stat, pri, sec)
+        else:
+            raise ValueError("Mix failed: Type should be SuperPotion or ExtremePotion")
+        self.potions.append(potion)
+
+        # Remove the ingredients from the storage.
+        prilist.remove(pri)
+        seclist.remove(sec)
+
     def addReagent(self, reagent: Reagent, amount: int) -> None:
+        if amount < 0:
+            raise ValueError("The amount should be positive integer.")
+        if isinstance(reagent, Herb):
+            old = Herb(reagent)
+            for _ in range(amount):
+                herb = Herb(old.getName(), old.getPotency(), old.getGrimy())
+                self.herbs.append(herb)
+        if isinstance(reagent, Catalyst):
+            old = Catalyst(reagent)
+            for _ in range(amount):
+                catalyst = Catalyst(old.getName(), old.getPotency(), old.getQuality())
+                self.catalysts.append(catalyst)
+
+    def getPotionNum(self, name: str) -> int:
         pass
+    def getHerbNum(self, name: str) -> int:
+        pass
+    def getCatalystNum(self, name: str) -> int:
+        pass
+
+    def takeIngredient(self, name: str):
+        """
+        Find one ingredient from the lab, if it exists, just remove it from the storage, otherwise return None
+        """
+        ingredient, lst = self.findIngredient(name, self.potions)
+        if ingredient is not None:
+            lst.remove(ingredient)
+        return None
+    def findIngredient(self, name: str):
+        ingredient = self.__findIngredient(name, self.potions)
+        if ingredient is not None:
+            return ingredient, self.potions
+
+        ingredient = self.__findIngredient(name, self.herbs)
+        if ingredient is not None:
+            return ingredient, self.herbs
+        
+        ingredient = self.__findIngredient(name, self.catalysts)
+        if ingredient is not None:
+            return ingredient, self.catalysts
+        return None, []
+    def __findIngredient(self, lst: list, name: str):
+        for item in range:
+            if item.getName() == name:
+                return item
+        return None
 
 class Alchemist:
     def __init__(self, attack: int, strength: int, defense: int,
         magic: int, ranged: int, necromancy: int,
         laboratory: Laboratory,
         recipes: dict = {}) -> None:
-        self.attact = attack
+        self.attack = attack
         self.strength = strength
         self.defense = defense
         self.magic = magic
@@ -103,6 +154,20 @@ class Alchemist:
         self.necromancy = necromancy
         self.laboratory = laboratory
         self.recipes = recipes
+
+        # I added the following as an extra:
+        # In general, potions drunk in the game will have a certain duration, not permanent.
+        # This property records the change in value caused by the potion currently drunk.
+        # The mage's actual stat is its own plus the BUFF from the current potions.
+        # The original attribute of the wizard is an int, which can be a float after it has been superimposed.
+        self.buffs = {
+            "attack": 0,
+            "strength": 0,
+            "defense": 0,
+            "magic": 0,
+            "ranged": 0,
+            "necromancy": 0,
+        }
 
     def getLaboratory(self) -> Laboratory:
         return self.laboratory
@@ -116,3 +181,19 @@ class Alchemist:
         pass
     def refineReagents(self):
         pass
+    def getPotion(self, name: str) -> Potion:
+        pass
+    def getAttack(self) -> float:
+        pass
+    def getStrength(self) -> float:
+        pass
+    def getDefense(self) -> float:
+        pass
+    def getMagic(self) -> float:
+        pass
+    def getRanged(self) -> float:
+        pass
+    def getNecromancy(self) -> float:
+        pass
+
+
