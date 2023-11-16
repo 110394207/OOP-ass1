@@ -1,9 +1,9 @@
 '''
 File: main.py
-Description: A brief description of this Python module.
-Author: Billy Bizilis
-StudentID: 110394207
-EmailID: yuyey004
+Description: This file is the program of Assignment Part 2:Implementation, it realizes the operation of a game character Alchemy in the game, the role can drink medicine and refine medicine. After drinking a certain potion, its own properties change.
+Author: Enda Yu
+StudentID: 1103942071
+EmailID: Yuyey004
 This is my own work as defined by the University's Academic Misconduct Policy.
 '''
 class Reagent:
@@ -23,7 +23,6 @@ class Herb(Reagent):
     def __init__(self, name: str, potency: float, grimy: bool = True) -> None:
         super().__init__(name, potency)
         self.grimy = grimy
-    
     def refine(self) -> str:
         return super().refine()
     def getGrimy(self) -> bool:
@@ -36,7 +35,6 @@ class Catalyst(Reagent):
     def __init__(self, name: str, potency: float, quality: float) -> None:
         super().__init__(name, potency)
         self.quality = quality
-    
     def refine(self) -> str:
         return super().refine()
     def getQuality(self) -> float:
@@ -59,10 +57,10 @@ class Potion:
         self.boost = boost
 
 class SuperPotion(Potion):
-    def __init__(self, name: str, stat: str, boost: float, herb: Herb, catalyst: Catalyst) -> None:
-        super().__init__(name, stat, boost)
+    def __init__(self, name: str, stat: str, herb: Herb, catalyst: Catalyst) -> None:
         self.herb = herb
         self.catalyst = catalyst
+        super().__init__(name, stat, self.calculateBoost())
     def calculateBoost(self) -> float:
         return super().calculateBoost()
     def getHerb(self) -> Herb:
@@ -71,10 +69,10 @@ class SuperPotion(Potion):
         return self.catalyst
 
 class ExtremePotion(Potion):
-    def __init__(self, name: str, stat: str, boost: float, reagent: Reagent, potion: Potion) -> None:
-        super().__init__(name, stat, boost)
+    def __init__(self, name: str, stat: str, reagent: Reagent, potion: Potion) -> None:
         self.reagent = reagent
         self.potion = potion
+        super().__init__(name, stat, self.calculateBoost())
     def calculateBoost(self) -> float:
         return super().calculateBoost()
     def getReagent(self) -> Reagent:
