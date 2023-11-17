@@ -10,20 +10,64 @@ This is my own work as defined by the University's Academic Misconduct Policy.
 from abc import ABC, abstractmethod
 
 class Reagent(ABC):
+    """
+    A class representing a reagent.
+
+    Attributes
+    ----------
+    name: str
+        the name of reagent.
+    potency: float
+        the potency value of reagent.
+
+    Methods
+    -------
+    refine():
+        The subclass needs to overwrite this function to realize refine, which changes the potency value.
+    getName():
+        Returns the name of this reagent.
+    getPotency():
+        Returns the potency value of this reagent.
+    setPotency(newPotency):
+        Set the potency to new value.
+    """
     def __init__(self, name: str, potency: float) -> None:
         self.name = name
         self.potency = potency
     @abstractmethod
     def refine(self) -> None:
+        """The subclass needs to overwrite this function to realize refine, which changes the potency value."""
         pass
     def getName(self) -> str:
+        """Returns the name of this reagent."""
         return self.name
     def getPotency(self) -> float:
+        """Returns the potency value of this reagent."""
         return self.potency
-    def setPotency(self, potency: float) -> None:
-        self.potency = potency
+    def setPotency(self, newPotency: float) -> None:
+        """Set the potency to new value."""
+        self.potency = newPotency
 
 class Herb(Reagent):
+    """
+    A class representing a herb.
+
+    Attributes
+    ----------
+    grimy: bool
+        Indicate whether the herb is grimy.
+        If the value is True, the herb is grimy, otherwise is not.
+        The default value is True.
+
+    Methods
+    -------
+    refine():
+        Herb: Refining leads to a herb that is not grimy and will multiply its existing potency by 2.5. It will print this information on the screen as well.
+    getGrimy():
+        Returns whether the herb is grimy.
+    setGrimy(grimy):
+        Set the grimy to new value.
+    """
     def __init__(self, name: str, potency: float, grimy: bool = True) -> None:
         super().__init__(name, potency)
         self.grimy = grimy
@@ -35,12 +79,32 @@ class Herb(Reagent):
         self.setPotency(round(self.getPotency()*2.5, 2))
         return "Refined success! The potency is {} now.".format(self.getPotency())
     def getGrimy(self) -> bool:
+        """Returns whether the herb is grimy."""
         return self.grimy
     def setGrimy(self, grimy: bool) -> bool:
+        """Set the grimy to new value."""
         self.grimy = grimy
         return True
 
 class Catalyst(Reagent):
+    """
+    A class representing a herb.
+
+    Attributes
+    ----------
+    quality: bool
+        Indicate whether the herb is grimy.
+        If the value is True, the herb is grimy, otherwise is not.
+        The default value is True.
+
+    Methods
+    -------
+    refine():
+        Catalyst: If the quality of the catalyst is below 8.9 then its quality will be increased by 1.1 and this information is printed on the screen. If its quality is equal or above 8.9 then its quality is set to 10. 
+        It should print on the screen the quality and say that “it cannot be refined any further”.
+    getQuality():
+        Returns the quality value.
+    """
     def __init__(self, name: str, potency: float, quality: float) -> None:
         super().__init__(name, potency)
         self.quality = quality
@@ -57,26 +121,76 @@ class Catalyst(Reagent):
         self.quality = round(self.getQuality() + 1.1, 2)
         return "Refined success! The quality is {} now.".format(self.getQuality())
     def getQuality(self) -> float:
+        """Returns the quality value."""
         return self.quality
 
 class Potion(ABC):
+    """
+    A class representing a potion.
+
+    Attributes
+    ----------
+    name: str
+        the name of reagent.
+    stat: str
+        the stat of this potion affect.
+    boost: float
+        how much does this potion would affect the stat.
+
+    Methods
+    -------
+    calculateBoost():
+        The subclass needs to overwrite this function to realize boost, which denots the value of increase the stat after drink this potion.
+    getName():
+        Returns the name of this potion.
+    getStat():
+        Returns the stat of this potion would affect.
+    getBoost():
+        Returns the value of increase the stat after drink this potion.
+    setBoost(boost):
+        Set the boost value.
+    """
     def __init__(self, name: str, stat: str, boost: float) -> None:
         self.name = name
         self.stat = stat
         self.boost = boost
     @abstractmethod
     def calculateBoost(self) -> None:
+        """The subclass needs to overwrite this function to realize boost, which denots the value of increase the stat after drink this potion."""
         pass
     def getName(self) -> str:
+        """Returns the name of this potion."""
         return self.name
     def getStat(self) -> str:
+        """Returns the stat of this potion would affect."""
         return self.stat
     def getBoost(self) -> float:
+        """Returns the value of increase the stat after drink this potion."""
         return self.boost
     def setBoost(self, boost: float) -> None:
+        """Set the boost value."""
         self.boost = boost
 
 class SuperPotion(Potion):
+    """
+    A class representing a super potion.
+
+    Attributes
+    ----------
+    herb: Herb
+        first ingredient of this potion.
+    catalyst: Catalyst
+        second ingredient of this potion.
+
+    Methods
+    -------
+    calculateBoost():
+        Super potion: potency of its herb + (potency of its catalyst * quality of its catalyst) * 1.5. The result should be rounded by 2 decimals.
+    getHerb():
+        Returns the first ingredient of this potion.
+    getCatalyst():
+        Returns the second ingredient of this potion.
+    """
     def __init__(self, name: str, stat: str, herb: Herb, catalyst: Catalyst) -> None:
         self.herb = herb
         self.catalyst = catalyst
@@ -89,11 +203,32 @@ class SuperPotion(Potion):
         catalyst = self.getCatalyst()
         return round(herb.getPotency() + catalyst.getPotency()*catalyst.getQuality()*1.5, 2)
     def getHerb(self) -> Herb:
+        """Returns the first ingredient of this potion."""
         return self.herb
     def getCatalyst(self) -> Catalyst:
+        """Returns the second ingredient of this potion."""
         return self.catalyst
 
 class ExtremePotion(Potion):
+    """
+    A class representing a extreme potion.
+
+    Attributes
+    ----------
+    reagent: Reagent
+        first ingredient of this potion.
+    potion: Potion
+        second ingredient of this potion.
+
+    Methods
+    -------
+    calculateBoost():
+        Extreme potion: (potency of its reagent * boost value of its super potion) * 3.0. The result should be rounded by two decimals.
+    getReagent():
+        Returns the first ingredient of this potion.
+    getPotion():
+        Returns the second ingredient of this potion.
+    """
     def __init__(self, name: str, stat: str, reagent: Reagent, potion: Potion) -> None:
         self.reagent = reagent
         self.potion = potion
@@ -106,16 +241,88 @@ class ExtremePotion(Potion):
         potion = self.getPotion()
         return round(reagent.getPotency()*potion.getBoost()*3.0, 2)
     def getReagent(self) -> Reagent:
+        """Returns the first ingredient of this potion."""
         return self.reagent
     def getPotion(self) -> Potion:
+        """Returns the second ingredient of this potion."""
         return self.potion
 
 class Laboratory:
+    """
+    A class representing a laboratory.
+
+    Attributes
+    ----------
+    potions: list of Potion
+        the potions stored in this laboratory.
+    herbs: list of Herb
+        the herbs stored in this laboratory.
+    catalysts: list of Catalyst
+        the catalysts stored in this laboratory.
+
+    Methods
+    -------
+    mixPotion(name, type, stat, primaryIngredient, secondaryIngredient):
+        Generate a new potion of two ingredients, it would remove two ingredients from storage,
+        and add the new one into the lab.
+
+        Parameters:
+            name (str): The name of the new potion.
+            type (str): The type of the new potion, is SuperPotion or ExtremePotion.
+            stat (str): The stat of the new potion, like attack, magic ..
+            primaryIngredient (str): The first ingredient name.
+            secondaryIngredient (str): The second ingredient name.
+    addReagent(reagent, amount):
+        Add some reagent into the lab.
+
+        Parameters:
+            reagent (Reagent): The ingredient which need to save.
+            amount (int) : The ingredients amount.
+    getPotionNum(name):
+        Returns the count of specified potion in the lab.
+        Parameters:
+            name (str): The name of potion I want to count.
+    getHerbNum(name):
+        Returns the count of specified herb in the lab.
+        Parameters:
+            name (str): The name of herb I want to count.
+    getCatalystNum(name):
+        Returns the count of specified catalyst in the lab.
+        Parameters:
+            name (str): The name of catalyst I want to count.
+    findIngredient(name):
+        Find an ingredient from the lab, returns the ingredient and the list which saved it if find out.
+        Parameters:
+            name (str): The name of ingredient I want to find.
+    __findIngredient(name, lst):
+        Find an ingredient from the list, returns the ingredient if find out.
+        Parameters:
+            name (str): The name of ingredient I want to find.
+            lst (list): The list which I want to find ingredient from.
+    removePotion(potion):
+        Remove a potion from the potion list after the wizard drink it.
+        If the deletion is success, return True. Otherwise return False.
+        Parameters:
+            potion (Potion): The potion I want to remove.
+    refineAll():
+        Refine all the herbs and catalysts in the lab.
+    """
     def __init__(self, potions: list, herbs: list, catalysts: list) -> None:
         self.potions = potions
         self.herbs = herbs
         self.catalysts = catalysts
     def mixPotion(self, name: str, type: str, stat: str, primaryIngredient: str, secondaryIngredient: str) -> None:
+        """"
+        Generate a new potion of two ingredients, it would remove two ingredients from storage,
+        and add the new one into the lab.
+
+        Parameters:
+            name (str): The name of the new potion.
+            type (str): The type of the new potion, is SuperPotion or ExtremePotion.
+            stat (str): The stat of the new potion, like attack, magic ..
+            primaryIngredient (str): The first ingredient name.
+            secondaryIngredient (str): The second ingredient name.
+        """
         # Find all ingredients.
         pri, prilist = self.findIngredient(primaryIngredient)
         sec, seclist = self.findIngredient(secondaryIngredient)
@@ -136,6 +343,13 @@ class Laboratory:
         seclist.remove(sec)
 
     def addReagent(self, reagent: Reagent, amount: int) -> None:
+        """
+        Add some reagent into the lab.
+
+        Parameters:
+            reagent (Reagent): The ingredient which need to save.
+            amount (int) : The ingredients amount.
+        """
         if amount < 0:
             raise ValueError("The amount should be positive integer.")
         if isinstance(reagent, Herb):
@@ -150,6 +364,9 @@ class Laboratory:
                 self.catalysts.append(catalyst)
 
     def getPotionNum(self, name: str) -> int:
+        """Returns the count of specified potion in the lab.
+        Parameters:
+            name (str): The name of potion I want to count."""
         num = 0
         for item in self.potions:
             if item.getName() == name:
@@ -157,12 +374,23 @@ class Laboratory:
         return num
 
     def getHerbNum(self, name: str) -> int:
+        """
+        getHerbNum(name):
+        Returns the count of specified herb in the lab.
+        Parameters:
+            name (str): The name of herb I want to count."""
         num = 0
         for item in self.herbs:
             if item.getName() == name:
                 num += 1
         return num
     def getCatalystNum(self, name: str) -> int:
+        """
+        getCatalystNum(name):
+        Returns the count of specified catalyst in the lab.
+        Parameters:
+            name (str): The name of catalyst I want to count.
+        """
         num = 0
         for item in self.catalysts:
             if item.getName() == name:
@@ -170,6 +398,9 @@ class Laboratory:
         return num
 
     def findIngredient(self, name: str):
+        """Find an ingredient from the lab, returns the ingredient and the list which saved it if find out.
+        Parameters:
+            name (str): The name of ingredient I want to find."""
         ingredient = self.__findIngredient(name, self.potions)
         if ingredient is not None:
             return ingredient, self.potions
@@ -183,18 +414,30 @@ class Laboratory:
             return ingredient, self.catalysts
         return None, []
     def __findIngredient(self, name: str, lst: list):
+        """
+        Find an ingredient from the list, returns the ingredient if find out.
+        Parameters:
+            name (str): The name of ingredient I want to find.
+            lst (list): The list which I want to find ingredient from.
+        """
         for item in lst:
             if item.getName() == name:
                 return item
         return None
     def removePotion(self, potion: Potion) -> bool:
+        """
+        Remove a potion from the potion list after the wizard drink it.
+        If the deletion is success, return True. Otherwise return False.
+        Parameters:
+            potion (Potion): The potion I want to remove.
+        """
         if potion not in self.potions:
             return False
         self.potions.remove(potion)
         return True
     def refineAll(self):
         """
-        Refine all herbs and catalysts.
+        Refine all the herbs and catalysts in the lab.
         """
         for item in self.herbs:
             item.refine()
@@ -202,6 +445,104 @@ class Laboratory:
             item.refine()
 
 class Alchemist:
+    """
+    A class representing a alchemist.
+
+    Attributes
+    ----------
+    attack: int
+        the init attack of this alchemist.
+    strength: int
+        the init strength of this alchemist.
+    defense: int
+        the init defense of this alchemist.
+    magic: int
+        the init magic of this alchemist.
+    ranged: int
+        the init ranged of this alchemist.
+    necromancy: int
+        the init necromancy of this alchemist.
+    laboratory: Laboratory
+        the alchemist owned lab. The wizard can collect ingredients and mix potions in this lab.
+    recipes: dict
+        the recipes of a lot of potions.
+        This recipes dict is initialized at the creation of this wizard.
+    buffs: dict
+        I added the following as an extra:
+        In general, potions drunk in the game will have a certain duration, not permanent.
+        This property records the change in value caused by the potion currently drunk.
+        The mage's actual stat is its own plus the BUFF from the current potions.
+        The original attribute of the wizard is an int, which can be a float after it has been superimposed.
+        The key of this dict is attack, strength, defense, magic, ranged and necromancy,
+        the value of each key is the buff value.
+
+    Methods
+    -------
+    checkAttibuteValues(attack, strength, defense, magic, ranged, necromancy):
+        This method would be called at the init of this class. It would check whether the attribute value is from 0 to 100.
+        If yes, it would return True, otherwise it would return False.
+
+        Parameters:
+            attack: int
+                the init attack of this alchemist.
+            strength: int
+                the init strength of this alchemist.
+            defense: int
+                the init defense of this alchemist.
+            magic: int
+                the init magic of this alchemist.
+            ranged: int
+                the init ranged of this alchemist.
+            necromancy: int
+                the init necromancy of this alchemist.
+    getLaboratory():
+        Returns the lab.
+    getRecipes():
+        Returns the recipes.
+    mixPotion(recipe):
+        It would find the recipe details from the recipes,
+        then call the mixPotion method of lab to generate a new potion based on recipe.
+        Parameters:
+            recipe: str
+                the name of potion I want to create.
+    drinkPotion(potion):
+        Return the increased stat value after drink one potion.
+        Parameters:
+            potion: Potion
+                the potion to drink.
+    collectReagent(reagent, amount):
+        Save a mount of reagent into the lab.
+        Parameters:
+            reagent: Reagent
+                The ingredients need to save.
+            amount: int
+                The amount of ingredients need to save.
+    refineReagents():
+        Refine all the ingredients in the lab.
+    getPotion(name):
+        Returns one potion I want to find in the lab.
+        Parameters:
+            name: str
+                The name of potion I want to find in the lab.
+    getAttack():
+        Returns the current attack value of this wizard.
+        It is the sum of init value and buff.
+    getStrength():
+        Returns the current strength value of this wizard.
+        It is the sum of init value and buff.
+    getDefense():
+        Returns the current defense value of this wizard.
+        It is the sum of init value and buff.
+    getMagic():
+        Returns the current magic value of this wizard.
+        It is the sum of init value and buff.
+    getRanged():
+        Returns the current ranged value of this wizard.
+        It is the sum of init value and buff.
+    getNecromancy():
+        Returns the current necromancy value of this wizard.
+        It is the sum of init value and buff.
+    """
     def __init__(self, attack: int, strength: int, defense: int,
         magic: int, ranged: int, necromancy: int,
         laboratory: Laboratory,
@@ -246,6 +587,24 @@ class Alchemist:
         }
 
     def checkAttibuteValues(self, attack, strength, defense, magic, ranged, necromancy) -> bool:
+        """
+        This method would be called at the init of this class. It would check whether the attribute value is from 0 to 100.
+        If yes, it would return True, otherwise it would return False.
+
+        Parameters:
+            attack: int
+                the init attack of this alchemist.
+            strength: int
+                the init strength of this alchemist.
+            defense: int
+                the init defense of this alchemist.
+            magic: int
+                the init magic of this alchemist.
+            ranged: int
+                the init ranged of this alchemist.
+            necromancy: int
+                the init necromancy of this alchemist.
+        """
         if (attack < 0 or attack > 100) \
             or (strength < 0 or strength > 100) \
             or (defense < 0 or defense > 100) \
@@ -260,37 +619,77 @@ class Alchemist:
     def getRecipes(self) -> dict:
         return self.recipes
     def mixPotion(self, recipe:str) -> None:
+        """
+        It would find the recipe details from the recipes,
+        then call the mixPotion method of lab to generate a new potion based on recipe.
+        Parameters:
+            recipe: str
+                the name of potion I want to create.
+        """
         if recipe not in self.recipes:
             raise ValueError("Could not found recipe of {}".format(recipe))
         # Read the recipe and mix it.
         name, recipeType , stat, pri, sec = self.recipes.get(recipe)
         self.laboratory.mixPotion(name, recipeType, stat, pri, sec)
     def drinkPotion(self, potion: Potion) -> str:
+        """
+        Return the increased stat value after drink one potion.
+        Parameters:
+            potion: Potion
+                the potion to drink.
+        """
         if False == self.laboratory.removePotion(potion):
             raise ValueError("Could not found potion.")
         stat = potion.getStat()
         self.buffs[stat] += round(potion.getBoost(), 2)
         return "{} increased {}".format(stat, potion.getBoost())
-
     def collectReagent(self, reagent:Reagent, amount: int) -> None:
+        """
+        Save a mount of reagent into the lab.
+        Parameters:
+            reagent: Reagent
+                The ingredients need to save.
+            amount: int
+                The amount of ingredients need to save.
+        """
         self.laboratory.addReagent(reagent, amount)
     def refineReagents(self):
+        """Refine all the ingredients in the lab."""
         self.laboratory.refineAll()
     def getPotion(self, name: str) -> Potion:
+        """
+        Returns one potion I want to find in the lab.
+        Parameters:
+            name: str
+                The name of potion I want to find in the lab.
+        """
         potion, _ = self.laboratory.findIngredient(name)
         return potion
     def getAttack(self) -> float:
+        """Returns the current attack value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["attack"] + self.attack, 2)
     def getStrength(self) -> float:
+        """Returns the current strength value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["strength"] + self.strength, 2)
     def getDefense(self) -> float:
+        """Returns the current defense value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["defense"] + self.defense, 2)
     def getMagic(self) -> float:
+        """Returns the current magic value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["magic"] + self.magic, 2)
     def getRanged(self) -> float:
+        """Returns the current ranged value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["ranged"] + self.ranged, 2)
     def getNecromancy(self) -> float:
+        """Returns the current necromancy value of this wizard.
+        It is the sum of init value and buff."""
         return round(self.buffs["necromancy"] + self.necromancy, 2)
+
 
 
 
