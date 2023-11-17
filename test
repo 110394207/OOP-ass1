@@ -10,7 +10,24 @@ import unittest
 from main import *
 
 class TestPoint(unittest.TestCase):
+    """
+    A class to test classes of main.
 
+    Methods
+    -------
+    test_herb():
+        Test Herb class functions by create avantoe, and check whether the refine() function works correctly.
+    test_catalyst():
+        Test Catalyst class functions by create Eye of Newt, and check whether the refine() function works correctly.
+    test_superPotion():
+        Test SuperPotion class functions, check whether the getBoost() function works correctly.
+    testExtremePotion():
+        Test ExtremePotion class functions, check whether the getBoost() function works correctly.
+    testLaboratory():
+        Test Laboratory class functions, check whether the mixPotion() and addReagent() function works correctly.
+    testAlchemist():
+        Test Alchemist class functions, check whether the mixPotion() and drintPotion() function works correctly.
+    """
     def test_herb(self):
         avantoe = Herb("Avantoe", 3.0)
         self.assertEqual(avantoe.getName(),"Avantoe")
@@ -106,4 +123,3 @@ class TestPoint(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
